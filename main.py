@@ -1,15 +1,28 @@
-from views.login import MainMenu
-
-
-class Application:
-    @staticmethod
-    def main():
-        if not x_login_correct:
-            menu = MainMenu()
-            menu.login_user()
+# standard libs
+from os import system
+from time import sleep
+# project modules
+from other_functions import hash_password
+from views.login import LoginMenu
 
 
 if __name__ == '__main__':
-    x_login_correct = False
+    menu = LoginMenu()
+
+    login_validation = (False, 0)
+
+    while not login_validation[0]:
+        login_validation = menu.login_user()
+        system('cls')
+
+        if login_validation[0]:
+            print('Zalogowano poprawnie')
+            sleep(2)
+            break
+        else:
+            print('Niepoprawne dane logowania.. spróbuj jeszcze raz..')
+
+    system('cls')
+    print('Witaj w moim programie!!')
     
-    Application.main()
+
