@@ -1,5 +1,5 @@
 # Standard libs
-from datetime import datetime
+from datetime import date, datetime
 from os import system
 from time import sleep
 # Project's modules
@@ -226,19 +226,21 @@ class CheckWorktime(AbstractView):
         while True:
             try:
                 workyear = int(input('Podaj rok: '))
+                if workyear > datetime.now().year or workyear < 1900:
+                    raise Exception
                 break
-            except:
-                print('Podano błędny rok!')
-                sleep(1)
+            except Exception:
+                print(f'Podano błędny rok! Podaj rok z zakresu (1901 - {datetime.now().year})')
                 continue
 
         while True:
             try:
                 workmonth = int(input('Podaj miesiąc: '))
+                if workmonth > 12 or workmonth < 1:
+                    raise Exception
                 break
-            except:
+            except Exception:
                 print('Podano błędny miesiąc!')
-                sleep(1)
                 continue
 
         month = repository.get_month(workyear, workmonth)
