@@ -1,5 +1,5 @@
-#
-from datetime import date, time
+# Standard libs
+from datetime import date, datetime, time, timedelta
 from sqlite3 import connect
 
 
@@ -28,7 +28,10 @@ class WorktimeRepository:
         cursor = connection.cursor()
         cursor.execute(
             '''
-                SELECT *
+                SELECT 
+                    `workday`,
+                    `start_time`,
+                    `end_time`
                 FROM worktime
                 WHERE `employee_id` = ? AND `workday` = ?
             ''',
@@ -36,6 +39,25 @@ class WorktimeRepository:
         )
 
         return cursor.fetchone()
+
+    def get_month(self, year: int, month: int):
+        start_date = str(year)+'-'+str(month)+'-01'
+        end_date = str(year)+'-'+str(month)+'-31'
+        connection = connect(DB_URL)
+        cursor = connection.cursor()
+        cursor.execute(
+            '''
+                SELECT 
+                    `workday`,
+                    `start_time`,
+                    `end_time`
+                FROM worktime
+                WHERE `employee_id` = ? AND `workday` BETWEEN ? AND ?
+            ''',
+            (self.employee_id, start_date, end_date)
+        )
+
+        return cursor.fetchall()
 
     def add_start_time(self, worktime_date: date, time: time):
         connection = connect(DB_URL)
@@ -92,3 +114,10 @@ class WorktimeRepository:
         )
 
         return cursor.fetchone()
+
+    @staticmethod
+    def print_worktime(fetch: list):
+        print('\n\nData\t\tWejście\t\tWyjście\t\tIlość przepracowanych godzin')
+        for item in fetch:
+            print(f'{item[0]}\t{item[1]}\t{"-"*8 if item[2] is None else item[2]}\t{"-"*8 if (item[1] is None or item[2] is None) else round((datetime.strptime(item[2], "%H:%M:%S")-datetime.strptime(item[1], "%H:%M:%S")).total_seconds()/3600, 2)}')
+        input('\n\n-- Wciśnij dowolny klawisz aby wrócić do menu --\n')

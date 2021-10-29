@@ -19,11 +19,12 @@ class Application:
             system('clear')
 
             if login_validation[0]:
-                print(f'Zalogowano poprawnie')
+                print('\n\nZalogowano poprawnie')
                 sleep(1)
                 break
             else:
-                print('Niepoprawne dane logowania.. spróbuj jeszcze raz..')
+                print('\n\nNiepoprawne dane logowania.. spróbuj jeszcze raz..')
+                sleep(1)
 
     # Menu główne
         title_id = login_validation[1]

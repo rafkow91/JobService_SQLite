@@ -51,12 +51,22 @@ class AddWorktime(AbstractView):
         worktime_time = None
 
         while True:
-            try:
-                worktime_date = datetime.strptime(input('Data: [DD-MM-RRRR] '), '%d-%m-%Y').date()
-            except:
-                print('podano niepoprawną datę!!')
+            option = input('Chcesz dodać godziny z innej daty? [t/n] ').lower()
+            if option == 't':
+                while True:
+                    try:
+                        worktime_date = datetime.strptime(input('Data: [DD-MM-RRRR] '), '%d-%m-%Y').date()
+                    except:
+                        print('podano niepoprawną datę!!')
+                        continue
+                    break
+                break
+            elif option == 'n':
+                worktime_date = datetime.now().date()
+                break
+            else:
+                print('Wybierz t lub n!')
                 continue
-            break
 
         worktime_end_time = repository.get_end_time(worktime_date)
         if worktime_end_time is None:
@@ -94,20 +104,28 @@ class AddWorktime(AbstractView):
         worktime_time = None
 
         while True:
-            try:
-                worktime_date = datetime.strptime(input('Data: [DD-MM-RRRR] '), '%d-%m-%Y').date()
-            except:
-                print('podano niepoprawną datę!!')
+            option = input('Chcesz dodać godziny z innej daty? [t/n] ').lower()
+            if option == 't':
+                while True:
+                    try:
+                        worktime_date = datetime.strptime(input('Data: [DD-MM-RRRR] '), '%d-%m-%Y').date()
+                    except:
+                        print('podano niepoprawną datę!!')
+                        continue
+                    break
+                break
+            elif option == 'n':
+                worktime_date = datetime.now().date()
+                break
+            else:
+                print('Wybierz t lub n!')
                 continue
-            break
 
         worktime_start_time = repository.get_start_time(worktime_date)
         if worktime_start_time is None:
             worktime_start_time = datetime.strptime('00:00:00', '%H:%M:%S').time()
         else:
             worktime_start_time = datetime.strptime(worktime_start_time[0], '%H:%M:%S').time()
-
-        print(worktime_start_time)
 
         while True:
             try:
@@ -128,3 +146,100 @@ class AddWorktime(AbstractView):
             repository.add_workday(worktime_date)
 
         repository.add_end_time(worktime_date, worktime_time)
+
+
+class CheckWorktime(AbstractView):
+    LABEL = 'Kontrola czasu pracy'
+    OPTIONS = {
+        1: 'wyświetl dzisiejszy dzień',
+        2: 'wyświetl aktualny miesiąc',
+        3: 'wyświetl dowolny miesiąc',
+        0: 'wróć do poprzedniego menu'
+    }
+
+    def draw(self):
+        system('clear')
+        self.options = CheckWorktime.OPTIONS
+
+        self.draw_logo(CheckWorktime.LABEL)
+        print('Co chcesz wyświetlić?\n')
+        for shortcut, descrition in self.options.items():
+            print(shortcut, '-', descrition)
+        print()
+
+    def get_choice(self):
+        option = None
+
+        while option not in self.options:
+            try:
+                option = int(input('Wybór: '))
+            except:
+                continue
+
+        if option == 1:
+            self.show_current_day()
+        elif option == 2:
+            self.show_current_month()
+        elif option == 3:
+            self.show_month()
+        elif option == 0:
+            return False
+
+    def show_current_day(self):
+        system('clear')
+        MethodLABEL = 'Czas pracy'
+        self.draw_logo(MethodLABEL)
+
+        repository = WorktimeRepository(self.employee_id)
+
+        workday = str(datetime.now().date)
+
+        current_day = repository.get_workday(workday)
+        try:
+            repository.print_worktime(list(current_day))
+        except:
+            print('Dziś jeszcze nie wprowadzono godzin!')
+            sleep(2)
+
+    def show_current_month(self):
+        system('clear')
+        MethodLABEL = 'Czas pracy'
+        self.draw_logo(MethodLABEL)
+
+        repository = WorktimeRepository(self.employee_id)
+
+        workmonth = datetime.now().month
+        workyear = datetime.now().year
+
+        current_month = repository.get_month(workyear, workmonth)
+        repository.print_worktime(current_month)
+
+    def show_month(self):
+        system('clear')
+        MethodLABEL = 'Czas pracy'
+        self.draw_logo(MethodLABEL)
+
+        repository = WorktimeRepository(self.employee_id)
+
+        print('Podaj rok i miesiąc, który chcesz zobaczyć')
+
+        while True:
+            try:
+                workyear = int(input('Podaj rok: '))
+                break
+            except:
+                print('Podano błędny rok!')
+                sleep(1)
+                continue
+
+        while True:
+            try:
+                workmonth = int(input('Podaj miesiąc: '))
+                break
+            except:
+                print('Podano błędny miesiąc!')
+                sleep(1)
+                continue
+
+        month = repository.get_month(workyear, workmonth)
+        repository.print_worktime(month)
