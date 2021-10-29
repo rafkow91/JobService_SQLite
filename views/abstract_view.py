@@ -3,8 +3,8 @@ from os import system
 
 
 class AbstractView(ABC):
-    def __init__(self):
-        self.repositories = {}
+    def add_employee_id(self, employee_id):
+        self.employee_id = employee_id
 
     def draw():
         pass
@@ -17,3 +17,4 @@ class AbstractView(ABC):
 
     def get_choice(self):
         pass
+

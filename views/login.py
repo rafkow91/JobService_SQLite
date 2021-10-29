@@ -1,10 +1,11 @@
 # standard libs
 from getpass import getpass
 from os import system
+from sqlite3 import connect
 from time import sleep
 # project's modules
-from database.db import get_connection
 from other_functions import hash_password
+from repositories import DB_URL
 from views.abstract_view import AbstractView
 
 
@@ -16,13 +17,15 @@ class LoginMenu(AbstractView):
         return (login, password)
 
     def login_user(self) -> tuple:
+        system('clear')
         self.draw_logo('Logowanie')
         data = self.input_login_password()
-        cursor = get_connection()
+        connection = connect(DB_URL)
+        cursor = connection.cursor()
 
         cursor.execute(
-            'SELECT password, title_id FROM employees WHERE login like :login',
-            {"login": data[0].lower()}
+            'SELECT password, title_id, id FROM employees WHERE login like ?',
+            (data[0].lower(),)
         )
 
         data_from_db = cursor.fetchone()
@@ -30,14 +33,15 @@ class LoginMenu(AbstractView):
 
         try:
             if data_from_db[0] == hash_password(data[1]):
-                return (True, data_from_db[1])
+                return (True, data_from_db[1], data_from_db[2])
         except TypeError:
             print(f'\tBłąd!!\nUżytkownik {data[0]} nie istnieje w bazie pracowników')
             sleep(2)
-        return (False, 0)
+        return (False, 0, None)
 
     def index(self):
-        cursor = get_connection()
+        connection = connect(DB_URL)
+        cursor = connection.cursor()
         cursor.execute(
             'SELECT * FROM employees'
         )

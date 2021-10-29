@@ -11,10 +11,10 @@ class QuitProgram(AbstractView):
     LABEL = 'Zamknij program'
 
     def draw(self):
-        system('cls')
+        system('clear')
         self.draw_logo('Do zobaczenia')
-        sleep(2)
-        system('cls')
+        sleep(1)
+        system('clear')
         quit()
 
 
@@ -31,6 +31,7 @@ class MainMenu(AbstractView):
     }
 
     def draw(self, title_id):
+        system('clear')
         self.draw_logo('Menu główne')
 
         self.options = MainMenu.OPTIONS[title_id]

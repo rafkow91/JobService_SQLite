@@ -8,18 +8,19 @@ from views.main_menu import MainMenu
 
 class Application:
     def main(self):
-    # Logowanie
+        # Logowanie
         menu = LoginMenu()
 
         login_validation = (False, 0)
 
         while not login_validation[0]:
+
             login_validation = menu.login_user()
-            system('cls')
+            system('clear')
 
             if login_validation[0]:
-                print('Zalogowano poprawnie')
-                sleep(2)
+                print(f'Zalogowano poprawnie')
+                sleep(1)
                 break
             else:
                 print('Niepoprawne dane logowania.. spróbuj jeszcze raz..')
@@ -33,11 +34,12 @@ class Application:
 
     # Menu czynności
             while True:
+                menu.add_employee_id(login_validation[2])
                 menu.draw()
                 choice = menu.get_choice()
                 if choice == False:
                     break
-        
+
 
 if __name__ == '__main__':
     app = Application()
