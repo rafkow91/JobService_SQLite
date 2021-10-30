@@ -3,7 +3,8 @@ create table titles
 (
     id serial primary key,
     title_name varchar(255) unique,
-    basic_salary int
+    basic_salary int,
+    group_id int
 );
 
 -- create table employees
@@ -12,7 +13,7 @@ create table employees
     id serial primary key,
     first_name varchar(30),
     last_name varchar(30),
-    title_id int,
+    title_id int references titles (id),
     mail varchar(255),
     phone int,
     login varchar(255),
