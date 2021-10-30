@@ -27,10 +27,10 @@ class Application:
                 sleep(1)
 
     # Menu główne
-        title_id = login_validation[1]
+        group_id = login_validation[1]
         while True:
             menu = MainMenu()
-            menu.draw(title_id)
+            menu.draw(group_id)
             menu = menu.get_choice()
 
     # Menu czynności

@@ -17,24 +17,54 @@ class QuitProgram(AbstractView):
         system('clear')
         quit()
 
+class ChangePassword(AbstractView):
+    LABEL = 'Zmień swoje hasło'
+
+    def draw(self):
+        pass
+        
+
 
 class MainMenu(AbstractView):
     OPTIONS = {
-        99999: {
+        # Menagers
+        1: {
             1: AddWorktime(),
             2: CheckWorktime(),
             3: AddEmployee(),
             4: EditEmployee(),
             5: ShowAllEmployees(),
+            9: ChangePassword(),
             0: QuitProgram()
-        }
+        },
+        # Employees
+        2: {
+            1: AddWorktime(),
+            2: CheckWorktime(),
+            3: ShowAllEmployees(),
+            9: ChangePassword(),
+            0: QuitProgram()
+        },
+        # Practise
+        3: {
+            1: AddWorktime(),
+            2: CheckWorktime(),
+            9: ChangePassword(),
+            0: QuitProgram()
+        },
+        # # Calulate salary
+        # 4: {
+        #     1: CalculateSalary(),
+        #     9: ChangePassword(),
+        #     0: QuitProgram()
+        # }
     }
 
-    def draw(self, title_id):
+    def draw(self, group_id):
         system('clear')
         self.draw_logo('Menu główne')
 
-        self.options = MainMenu.OPTIONS[title_id]
+        self.options = MainMenu.OPTIONS[group_id]
 
         print('Wybierz co chcesz zrobić:\n')
 

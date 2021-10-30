@@ -11,7 +11,7 @@ from views.abstract_view import AbstractView
 
 class LoginMenu(AbstractView):
     def input_login_password(self) -> tuple:
-        login = input('Login: ')
+        login = input('Login: ').lower()
         password = getpass('Hasło: ')
 
         return (login, password)
@@ -24,7 +24,15 @@ class LoginMenu(AbstractView):
         cursor = connection.cursor()
 
         cursor.execute(
-            'SELECT password, title_id, id FROM employees WHERE login like ?',
+            '''
+                SELECT
+                e.password, 
+                t.group_id,
+                e.id 
+            FROM employees e
+            left JOIN titles t ON t.id = e.title_id 
+            WHERE login like ? 
+            ''',
             (data[0].lower(),)
         )
 
