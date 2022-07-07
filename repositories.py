@@ -21,7 +21,7 @@ class WorktimeRepository:
 
         connection.commit()
 
-    def get_workday(self, worktime_date: date):
+    def get_workday(self, worktime_date: str):
         connection = connect(DB_URL)
         cursor = connection.cursor()
         cursor.execute(
@@ -39,8 +39,11 @@ class WorktimeRepository:
         return cursor.fetchone()
 
     def get_month(self, year: int, month: int):
-        start_date = str(year) + '-' + str(month) + '-01'
-        end_date = str(year) + '-' + str(month) + '-31'
+        str_month = '0' + str(month) if month < 10 else str(month)
+
+        start_date = str(year) + '-' + str_month + '-01'
+        end_date = str(year) + '-' + str_month + '-31'
+        
         connection = connect(DB_URL)
         cursor = connection.cursor()
         cursor.execute(
@@ -54,7 +57,7 @@ class WorktimeRepository:
             ''',
             (self.employee_id, start_date, end_date)
         )
-
+                
         return cursor.fetchall()
 
     def add_start_time(self, worktime_date: date, time: time):
@@ -113,12 +116,13 @@ class WorktimeRepository:
 
         return cursor.fetchone()
 
+# TODO: do zmiany na tabele!! i coś tu nie działa
     @staticmethod
     def print_worktime(fetch: list):
         print('\n\nData\t\tWejście\t\tWyjście\t\tIlość przepracowanych godzin')
         for item in fetch:
             print(
-                f'{item[0]}\t{item[1]}\t{"-" * 8 if item[2] is None else item[2]}\t{"-" * 8 if (item[1] is None or item[2] is None) else round((datetime.strptime(item[2], "%H:%M:%S") - datetime.strptime(item[1], "%H:%M:%S")).total_seconds() / 3600, 2)}')
+                f'{item[0]}\t{item[1]}\t{"-" * 8 if item[2] is None else item[2]}\t{"-" * 8 if (item[1] or item[2]) is None else round((datetime.strptime(item[2], "%H:%M:%S") - datetime.strptime(item[1], "%H:%M:%S")).total_seconds() / 3600, 2)}')
         input('\n\n-- Wciśnij dowolny klawisz aby wrócić do menu --\n')
 
 

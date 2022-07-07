@@ -193,12 +193,13 @@ class CheckWorktime(AbstractView):
 
         repository = WorktimeRepository(self.employee_id)
 
-        workday = str(datetime.now().date)
+        workday = str(datetime.now().date())
 
         current_day = repository.get_workday(workday)
+
         try:
-            repository.print_worktime(list(current_day))
-        except:
+            repository.print_worktime([current_day, ])
+        except IndexError:
             print('Dziś jeszcze nie wprowadzono godzin!')
             sleep(2)
 
@@ -213,6 +214,7 @@ class CheckWorktime(AbstractView):
         workyear = datetime.now().year
 
         current_month = repository.get_month(workyear, workmonth)
+
         repository.print_worktime(current_month)
 
     def show_month(self):

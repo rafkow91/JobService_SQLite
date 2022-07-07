@@ -94,14 +94,14 @@ class AddEmployee(AbstractView):
 
         return title
 
-
+# TODO:
 class EditEmployee(AbstractView):
     LABEL = 'Edycja konta pracownika'
 
     def draw(self):
         self.draw_logo(EditEmployee.LABEL)
 
-
+# TODO:
 class ShowAllEmployees(AbstractView):
     LABEL = 'Wyświetlanie wszystkich pracowników'
 
