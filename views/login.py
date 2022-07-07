@@ -1,10 +1,8 @@
-# standard libs
 from getpass import getpass
-from os import system
 from sqlite3 import connect
 from time import sleep
-# project's modules
-from other_functions import hash_password
+
+from other_functions import clear_screen, hash_password
 from repositories import DB_URL
 from views.abstract_view import AbstractView
 
@@ -17,7 +15,7 @@ class LoginMenu(AbstractView):
         return (login, password)
 
     def login_user(self) -> tuple:
-        system('clear')
+        clear_screen()
         self.draw_logo('Logowanie')
         data = self.input_login_password()
         connection = connect(DB_URL)

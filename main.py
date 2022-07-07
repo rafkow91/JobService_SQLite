@@ -1,9 +1,11 @@
 # standard libs
 from os import system
 from time import sleep
+from other_functions import clear_screen
 # project's modules
 from views.login import LoginMenu
 from views.main_menu import MainMenu
+from other_functions import clear_screen
 
 
 class Application:
@@ -16,7 +18,7 @@ class Application:
         while not login_validation[0]:
 
             login_validation = menu.login_user()
-            system('clear')
+            clear_screen()
 
             if login_validation[0]:
                 print('\n\nZalogowano poprawnie')

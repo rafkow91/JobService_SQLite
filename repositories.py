@@ -1,7 +1,5 @@
-# Standard libs
-from datetime import date, datetime, time, timedelta
+from datetime import date, datetime, time
 from sqlite3 import connect
-
 
 DB_URL = './database/job_service.db'
 
@@ -41,8 +39,8 @@ class WorktimeRepository:
         return cursor.fetchone()
 
     def get_month(self, year: int, month: int):
-        start_date = str(year)+'-'+str(month)+'-01'
-        end_date = str(year)+'-'+str(month)+'-31'
+        start_date = str(year) + '-' + str(month) + '-01'
+        end_date = str(year) + '-' + str(month) + '-31'
         connection = connect(DB_URL)
         cursor = connection.cursor()
         cursor.execute(
@@ -119,5 +117,54 @@ class WorktimeRepository:
     def print_worktime(fetch: list):
         print('\n\nData\t\tWejście\t\tWyjście\t\tIlość przepracowanych godzin')
         for item in fetch:
-            print(f'{item[0]}\t{item[1]}\t{"-"*8 if item[2] is None else item[2]}\t{"-"*8 if (item[1] is None or item[2] is None) else round((datetime.strptime(item[2], "%H:%M:%S")-datetime.strptime(item[1], "%H:%M:%S")).total_seconds()/3600, 2)}')
+            print(
+                f'{item[0]}\t{item[1]}\t{"-" * 8 if item[2] is None else item[2]}\t{"-" * 8 if (item[1] is None or item[2] is None) else round((datetime.strptime(item[2], "%H:%M:%S") - datetime.strptime(item[1], "%H:%M:%S")).total_seconds() / 3600, 2)}')
         input('\n\n-- Wciśnij dowolny klawisz aby wrócić do menu --\n')
+
+
+class EmployeeRepository():
+    @staticmethod
+    def add_new_employee(person: dict):
+        connection = connect(DB_URL)
+        cursor = connection.cursor()
+        cursor.execute(
+            '''
+                INSERT INTO employees (`first_name`, `last_name`, `title_id`, `mail`, `phone`, `login`, `password`)
+                VALUES (?, ?, ?, ?, ?, ?, ?)
+            ''',
+            (person['first_name'], person['last_name'], person['title_id'],
+             person['mail'], person['phone'], person['login'], person['password'])
+        )
+
+        connection.commit()
+
+
+class TitleRepository():
+    @staticmethod
+    def get_title_id_by_title(title: str):
+        connection = connect(DB_URL)
+        cursor = connection.cursor()
+        cursor.execute(
+            '''
+                SELECT id
+                FROM titles
+                WHERE title_name like ?
+            ''',
+            (title, )
+        )
+
+        return cursor.fetchone()
+
+    @staticmethod
+    def add_new_title(title: dict):
+        connection = connect(DB_URL)
+        cursor = connection.cursor()
+        cursor.execute(
+            '''
+                INSERT INTO titles (`title_name`, `basic_salary`, `group_id`)
+                VALUES (?, ?, ?)
+            ''',
+            (title['name'], title['salary'], title['group_id'])
+        )
+
+        connection.commit()

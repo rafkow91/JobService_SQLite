@@ -1,7 +1,6 @@
-# Standard libs
-from os import system
 from time import sleep
-# Project's modules
+from other_functions import clear_screen
+
 from views.abstract_view import AbstractView
 from views.manage_employees import AddEmployee, EditEmployee, ShowAllEmployees
 from views.worktime_managment import AddWorktime, CheckWorktime
@@ -11,18 +10,18 @@ class QuitProgram(AbstractView):
     LABEL = 'Zamknij program'
 
     def draw(self):
-        system('clear')
+        clear_screen()
         self.draw_logo('Do zobaczenia')
         sleep(1)
-        system('clear')
+        clear_screen()
         quit()
+
 
 class ChangePassword(AbstractView):
     LABEL = 'Zmień swoje hasło'
 
     def draw(self):
         pass
-        
 
 
 class MainMenu(AbstractView):
@@ -61,7 +60,7 @@ class MainMenu(AbstractView):
     }
 
     def draw(self, group_id):
-        system('clear')
+        clear_screen()
         self.draw_logo('Menu główne')
 
         self.options = MainMenu.OPTIONS[group_id]

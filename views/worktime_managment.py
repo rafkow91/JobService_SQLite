@@ -1,8 +1,7 @@
-# Standard libs
-from datetime import date, datetime
-from os import system
+from datetime import datetime
 from time import sleep
-# Project's modules
+from other_functions import clear_screen
+
 from views.abstract_view import AbstractView
 from repositories import WorktimeRepository
 
@@ -16,7 +15,7 @@ class AddWorktime(AbstractView):
     }
 
     def draw(self):
-        system('clear')
+        clear_screen()
         self.options = AddWorktime.OPTIONS
 
         self.draw_logo(AddWorktime.LABEL)
@@ -42,7 +41,7 @@ class AddWorktime(AbstractView):
             return False
 
     def input_start_time(self):
-        system('clear')
+        clear_screen()
         MethodLABEL = 'Czas wejścia'
         self.draw_logo(MethodLABEL)
         repository = WorktimeRepository(self.employee_id)
@@ -52,10 +51,11 @@ class AddWorktime(AbstractView):
 
         while True:
             option = input('Chcesz dodać godziny z innej daty? [t/n] ').lower()
-            if option == 't':
+            if option == 't' or option == '':
                 while True:
                     try:
-                        worktime_date = datetime.strptime(input('Data: [DD-MM-RRRR] '), '%d-%m-%Y').date()
+                        worktime_date = datetime.strptime(
+                            input('Data: [DD-MM-RRRR] '), '%d-%m-%Y').date()
                     except:
                         print('podano niepoprawną datę!!')
                         continue
@@ -95,7 +95,7 @@ class AddWorktime(AbstractView):
         repository.add_start_time(worktime_date, worktime_time)
 
     def input_end_time(self):
-        system('clear')
+        clear_screen()
         MethodLABEL = 'Czas wyjścia'
         self.draw_logo(MethodLABEL)
         repository = WorktimeRepository(self.employee_id)
@@ -105,10 +105,11 @@ class AddWorktime(AbstractView):
 
         while True:
             option = input('Chcesz dodać godziny z innej daty? [t/n] ').lower()
-            if option == 't':
+            if option == 't' or option == '':
                 while True:
                     try:
-                        worktime_date = datetime.strptime(input('Data: [DD-MM-RRRR] '), '%d-%m-%Y').date()
+                        worktime_date = datetime.strptime(
+                            input('Data: [DD-MM-RRRR] '), '%d-%m-%Y').date()
                     except:
                         print('podano niepoprawną datę!!')
                         continue
@@ -158,7 +159,7 @@ class CheckWorktime(AbstractView):
     }
 
     def draw(self):
-        system('clear')
+        clear_screen()
         self.options = CheckWorktime.OPTIONS
 
         self.draw_logo(CheckWorktime.LABEL)
@@ -186,7 +187,7 @@ class CheckWorktime(AbstractView):
             return False
 
     def show_current_day(self):
-        system('clear')
+        clear_screen()
         MethodLABEL = 'Czas pracy'
         self.draw_logo(MethodLABEL)
 
@@ -202,7 +203,7 @@ class CheckWorktime(AbstractView):
             sleep(2)
 
     def show_current_month(self):
-        system('clear')
+        clear_screen()
         MethodLABEL = 'Czas pracy'
         self.draw_logo(MethodLABEL)
 
@@ -215,7 +216,7 @@ class CheckWorktime(AbstractView):
         repository.print_worktime(current_month)
 
     def show_month(self):
-        system('clear')
+        clear_screen()
         MethodLABEL = 'Czas pracy'
         self.draw_logo(MethodLABEL)
 
