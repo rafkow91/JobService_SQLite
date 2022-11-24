@@ -1,5 +1,5 @@
 # standard libs
-from os import system
+from os import environ
 from time import sleep
 from other_functions import clear_screen
 # project's modules
@@ -12,6 +12,7 @@ class Application:
     def main(self):
         # Logowanie
         menu = LoginMenu()
+        print(environ.get('DB_PATH'))
 
         login_validation = (False, 0)
 

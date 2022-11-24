@@ -1,10 +1,9 @@
 from getpass import getpass
-from sqlite3 import connect
 from time import sleep
 
 from other_functions import clear_screen, hash_password
-from repositories import DB_URL
 from views.abstract_view import AbstractView
+from repositories import LoginRepository
 
 
 class LoginMenu(AbstractView):
@@ -18,24 +17,8 @@ class LoginMenu(AbstractView):
         clear_screen()
         self.draw_logo('Logowanie')
         data = self.input_login_password()
-        connection = connect(DB_URL)
-        cursor = connection.cursor()
-
-        cursor.execute(
-            '''
-                SELECT
-                e.password, 
-                t.group_id,
-                e.id 
-            FROM employees e
-            left JOIN titles t ON t.id = e.title_id 
-            WHERE login like ? 
-            ''',
-            (data[0].lower(),)
-        )
-
-        data_from_db = cursor.fetchone()
-        cursor.close()
+        repository = LoginRepository()
+        data_from_db = repository.get_data(data[0])
 
         try:
             if data_from_db[0] == hash_password(data[1]):
@@ -46,9 +29,7 @@ class LoginMenu(AbstractView):
         return (False, 0, None)
 
     def index(self):
-        connection = connect(DB_URL)
-        cursor = connection.cursor()
-        cursor.execute(
+        self.cursor.execute(
             'SELECT * FROM employees'
         )
-        return cursor.fetchall()
+        return self.cursor.fetchall()

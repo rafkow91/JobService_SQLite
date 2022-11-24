@@ -8,3 +8,4 @@
 #files
 *.db
 /.venv
+.env

@@ -50,7 +50,7 @@ class AddWorktime(AbstractView):
         worktime_time = None
 
         while True:
-            option = input('Chcesz dodać godziny z innej daty? [t/n] ').lower()
+            option = input('Chcesz dodać godziny z innej daty? [T/n] ').lower()
             if option == 't' or option == '':
                 while True:
                     try:
@@ -104,7 +104,7 @@ class AddWorktime(AbstractView):
         worktime_time = None
 
         while True:
-            option = input('Chcesz dodać godziny z innej daty? [t/n] ').lower()
+            option = input('Chcesz dodać godziny z innej daty? ').lower()
             if option == 't' or option == '':
                 while True:
                     try:
@@ -168,9 +168,7 @@ class CheckWorktime(AbstractView):
             print(shortcut, '-', descrition)
         print()
 
-    def get_choice(self):
-        option = None
-
+    def get_choice(self, option: int = None):
         while option not in self.options:
             try:
                 option = int(input('Wybór: '))
@@ -199,7 +197,7 @@ class CheckWorktime(AbstractView):
 
         try:
             repository.print_worktime([current_day, ])
-        except IndexError:
+        except TypeError:
             print('Dziś jeszcze nie wprowadzono godzin!')
             sleep(2)
 

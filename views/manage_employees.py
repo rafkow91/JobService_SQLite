@@ -1,7 +1,9 @@
+from time import sleep
+
 from getpass import getpass
 
 from views.abstract_view import AbstractView
-from my_secret_file import domain
+from config import EMAIL_DOMAIN
 from repositories import TitleRepository, EmployeeRepository
 from other_functions import clear_screen, hash_password
 
@@ -11,30 +13,41 @@ class AddEmployee(AbstractView):
 
     def draw(self):
         clear_screen()
-        self.draw_logo(AddEmployee.LABEL)
+        self.draw_logo(self.LABEL)
 
-        person = self.create(domain)
-        repository = EmployeeRepository()
-        print(person)
-        repository.add_new_employee(person)
-        input()
 
-    def create(self, domain):
+    def get_choice(self, option: int = None):
+        while True:
+            choice = input('Chcesz dodać nowego pracownika? [T/n] ')
+
+            if choice != '' and choice[0].lower() not in ('t', 'y'):
+                break
+
+            person = self.create(EMAIL_DOMAIN)
+            repository = EmployeeRepository()
+            repository.add_new_employee(person)
+            self.draw()
+            print(f'Poprawnie dodano nowego pracownika ({person["login"]})')
+            sleep(1)
+            self.draw()
+        
+        return False
+
+    def create(self, EMAIL_DOMAIN):
         person = dict()
-
         person['first_name'] = input('Imię: ')
         person['last_name'] = input('Nazwisko: ')
 
         while True:
             try:
                 person['phone'] = int(input('Nr tel.: '))
-            except:
+            except ValueError:
                 print('Numer telefonu musi być ciągiem liczb...')
                 continue
             break
 
         person['login'] = person['first_name'][0].lower() + person['last_name'].lower()
-        person['mail'] = person['login'] + '@' + domain
+        person['mail'] = person['login'] + '@' + EMAIL_DOMAIN
         person['title'] = input('Stanowisko: ')
 
         repository = TitleRepository()
@@ -55,6 +68,8 @@ class AddEmployee(AbstractView):
                     break
 
                 elif choice == 'n':
+                    print('Lista dostępnych stanowisk:')
+                    print(repository.get_titles_list())
                     person['title'] = input('Podaj ponownie nazwę stanowiska: ')
                     break
 
@@ -75,24 +90,25 @@ class AddEmployee(AbstractView):
 
     @staticmethod
     def create_title(title_name):
-        title = {}
+        title = dict()
         title['name'] = title_name
         while True:
             try:
                 title['salary'] = float(input('Wynagrodzenie podstawowe: '))
-            except:
+            except ValueError:
                 print('Podana wartość nie jest liczbą. Podaj ponownie')
                 continue
             break
         while True:
             try:
                 title['group_id'] = int(input('Grupa dostępu: '))
-            except:
+            except ValueError:
                 print('Podana wartość nie jest liczbą. Podaj ponownie')
                 continue
             break
 
         return title
+
 
 # TODO:
 class EditEmployee(AbstractView):
@@ -100,6 +116,8 @@ class EditEmployee(AbstractView):
 
     def draw(self):
         self.draw_logo(EditEmployee.LABEL)
+
+
 
 # TODO:
 class ShowAllEmployees(AbstractView):

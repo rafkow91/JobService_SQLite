@@ -1,17 +1,41 @@
 from datetime import date, datetime, time
 from sqlite3 import connect
 
-DB_URL = './database/job_service.db'
+from config import DB_PATH
 
 
-class WorktimeRepository:
+class BaseRepository:
+    def __init__(self) -> None:
+        print(DB_PATH)
+        self.connection = connect(DB_PATH)
+        self.cursor = self.connection.cursor()
+
+
+class LoginRepository(BaseRepository):
+    def get_data(self, login: str):
+        self.cursor.execute(
+            '''
+                SELECT
+                e.password, 
+                t.group_id,
+                e.id 
+            FROM employees e
+            left JOIN titles t ON t.id = e.title_id 
+            WHERE login like ? 
+            ''',
+            (login.lower(),)
+        )
+
+        return self.cursor.fetchone()
+
+
+class WorktimeRepository(BaseRepository):
     def __init__(self, employee_id: int) -> None:
+        super().__init__()
         self.employee_id = employee_id
 
     def add_workday(self, worktime_date: date):
-        connection = connect(DB_URL)
-        cursor = connection.cursor()
-        cursor.execute(
+        self.cursor.execute(
             '''
                 INSERT INTO worktime (`employee_id`, `workday`)
                 VALUES (?, ?)
@@ -19,12 +43,10 @@ class WorktimeRepository:
             (self.employee_id, worktime_date)
         )
 
-        connection.commit()
+        self.connection.commit()
 
     def get_workday(self, worktime_date: str):
-        connection = connect(DB_URL)
-        cursor = connection.cursor()
-        cursor.execute(
+        self.cursor.execute(
             '''
                 SELECT 
                     `workday`,
@@ -36,17 +58,15 @@ class WorktimeRepository:
             (self.employee_id, worktime_date)
         )
 
-        return cursor.fetchone()
+        return self.cursor.fetchone()
 
     def get_month(self, year: int, month: int):
         str_month = '0' + str(month) if month < 10 else str(month)
 
         start_date = str(year) + '-' + str_month + '-01'
         end_date = str(year) + '-' + str_month + '-31'
-        
-        connection = connect(DB_URL)
-        cursor = connection.cursor()
-        cursor.execute(
+
+        self.cursor.execute(
             '''
                 SELECT 
                     `workday`,
@@ -57,13 +77,11 @@ class WorktimeRepository:
             ''',
             (self.employee_id, start_date, end_date)
         )
-                
-        return cursor.fetchall()
+
+        return self.cursor.fetchall()
 
     def add_start_time(self, worktime_date: date, time: time):
-        connection = connect(DB_URL)
-        cursor = connection.cursor()
-        cursor.execute(
+        self.cursor.execute(
             '''
                 UPDATE worktime
                 SET `start_time` = ?
@@ -72,12 +90,10 @@ class WorktimeRepository:
             (time, self.employee_id, worktime_date)
         )
 
-        connection.commit()
+        self.connection.commit()
 
     def get_start_time(self, worktime_date: date):
-        connection = connect(DB_URL)
-        cursor = connection.cursor()
-        cursor.execute(
+        self.cursor.execute(
             '''
                 SELECT start_time
                 FROM worktime
@@ -86,12 +102,10 @@ class WorktimeRepository:
             (self.employee_id, worktime_date)
         )
 
-        return cursor.fetchone()
+        return self.cursor.fetchone()
 
     def add_end_time(self, worktime_date: date, time: time):
-        connection = connect(DB_URL)
-        cursor = connection.cursor()
-        cursor.execute(
+        self.cursor.execute(
             '''
                 UPDATE worktime
                 SET `end_time` = ?
@@ -100,12 +114,10 @@ class WorktimeRepository:
             (time, self.employee_id, worktime_date)
         )
 
-        connection.commit()
+        self.connection.commit()
 
     def get_end_time(self, worktime_date: date):
-        connection = connect(DB_URL)
-        cursor = connection.cursor()
-        cursor.execute(
+        self.cursor.execute(
             '''
                 SELECT end_time
                 FROM worktime
@@ -114,7 +126,7 @@ class WorktimeRepository:
             (self.employee_id, worktime_date)
         )
 
-        return cursor.fetchone()
+        return self.cursor.fetchone()
 
 # TODO: do zmiany na tabele!! i coś tu nie działa
     @staticmethod
@@ -126,12 +138,9 @@ class WorktimeRepository:
         input('\n\n-- Wciśnij dowolny klawisz aby wrócić do menu --\n')
 
 
-class EmployeeRepository():
-    @staticmethod
-    def add_new_employee(person: dict):
-        connection = connect(DB_URL)
-        cursor = connection.cursor()
-        cursor.execute(
+class EmployeeRepository(BaseRepository):
+    def add_new_employee(self, person: dict):
+        self.cursor.execute(
             '''
                 INSERT INTO employees (`first_name`, `last_name`, `title_id`, `mail`, `phone`, `login`, `password`)
                 VALUES (?, ?, ?, ?, ?, ?, ?)
@@ -140,15 +149,12 @@ class EmployeeRepository():
              person['mail'], person['phone'], person['login'], person['password'])
         )
 
-        connection.commit()
+        self.connection.commit()
 
 
-class TitleRepository():
-    @staticmethod
-    def get_title_id_by_title(title: str):
-        connection = connect(DB_URL)
-        cursor = connection.cursor()
-        cursor.execute(
+class TitleRepository(BaseRepository):
+    def get_title_id_by_title(self, title: str):
+        self.cursor.execute(
             '''
                 SELECT id
                 FROM titles
@@ -157,13 +163,20 @@ class TitleRepository():
             (title, )
         )
 
-        return cursor.fetchone()
+        return self.cursor.fetchone()
 
-    @staticmethod
-    def add_new_title(title: dict):
-        connection = connect(DB_URL)
-        cursor = connection.cursor()
-        cursor.execute(
+    def get_titles_list(self):
+        self.cursor.execute(
+            '''
+                SELECT title_name 
+                FROM titles
+            '''
+        )
+
+        return self.cursor.fetchall()
+
+    def add_new_title(self, title: dict):
+        self.cursor.execute(
             '''
                 INSERT INTO titles (`title_name`, `basic_salary`, `group_id`)
                 VALUES (?, ?, ?)
@@ -171,4 +184,4 @@ class TitleRepository():
             (title['name'], title['salary'], title['group_id'])
         )
 
-        connection.commit()
+        self.connection.commit()
