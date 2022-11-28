@@ -14,7 +14,7 @@ class EmployeeRepository(BaseRepository):
 
         self.connection.commit()
 
-    def index(self):
+    def index(self) -> list[tuple]:
         self.cursor.execute(
             '''
                 SELECT
@@ -29,6 +29,26 @@ class EmployeeRepository(BaseRepository):
         )
 
         return self.cursor.fetchall()
+
+    def get_employee_by_id(self, employee_id: int) -> list[tuple]:
+        self.cursor.execute(
+            '''
+                SELECT
+                    e.first_name, 
+                    e.last_name,
+                    t.title_name,
+                    e.phone,
+                    e.mail,
+                    e.login
+                FROM employees e
+                left JOIN titles t ON t.id = e.title_id
+                WHERE e.id = ?
+            ''', 
+            (employee_id, )
+        )
+
+        return self.cursor.fetchone()
+
 
 
 class TitleRepository(BaseRepository):

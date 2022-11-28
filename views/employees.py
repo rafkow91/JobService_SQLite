@@ -125,13 +125,13 @@ class EditEmployee(AbstractView):
         table += index
 
         print_table(table)
-        
-        employee_ids = [item[0] for item in index]
 
+        employee_ids = [item[0] for item in index]
 
         while True:
             try:
-                choice = input('Którego pracownika chcesz edytować? (podaj id) // aby anulować wciśnij "enter" //  ')
+                choice = input(
+                    'Którego pracownika chcesz edytować? (podaj id) // aby anulować wciśnij "enter" //  ')
                 if choice == '':
                     return False
                 if int(choice) not in employee_ids:
@@ -140,16 +140,23 @@ class EditEmployee(AbstractView):
                 print('Id musi być liczbą z piewszej kolumny!!')
                 continue
             self.edit(int(choice))
+            input()
             break
         return False
 
     def edit(self, employee_id: int):
         clear_screen()
         self.draw()
-        input('...')
+        print('// aby nie zmieniać danego pola wciśnij "enter"//\n\n')
+        existed_employee = self.repository.get_employee_by_id(employee_id)
+        print(existed_employee)
+        change_employee = []
+
+        # TODO: Tu skończyłem pracować (2022-11-28 21:05)
+        for field in existed_employee:
+            to_append = input('...')
 
 
-# TODO:
 class ShowAllEmployees(AbstractView):
     LABEL = 'Wyświetlanie wszystkich pracowników'
     repository = EmployeeRepository()
