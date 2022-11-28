@@ -1,6 +1,8 @@
 from datetime import date, datetime, time
 from sqlite3 import connect
 
+from tabulate import tabulate
+
 from config import DB_PATH
 
 
@@ -128,19 +130,18 @@ class WorktimeRepository(BaseRepository):
 
         return self.cursor.fetchone()
 
-# TODO: do zmiany na tabele!! i coś tu nie działa
     @staticmethod
     def print_worktime(fetch: list):
-        print('\n\nData\t\tWejście\t\tWyjście\t\tIlość przepracowanych godzin')
+        table = [('Data', 'Wejście', 'Wyjście', 'Ilość przepracowanych godzin')]
         for item in fetch:
-            item = list(item)
+            to_print = [i if i is not None else '-'*8 for i in item]
             try:
-                item.append(round((datetime.strptime(item[2], "%H:%M:%S") - datetime.strptime(item[1], "%H:%M:%S")).total_seconds() / 3600, 2))
+                to_print.append(round((datetime.strptime(item[2], "%H:%M:%S") - datetime.strptime(item[1], "%H:%M:%S")).total_seconds() / 3600, 2))
             except TypeError:
-                item.append('-' * 8)
-            print(item)
-            # print(
-            #     f'{item[0]}\t{item[1]}\t{"-" * 8 if item[2] is None else item[2]}\t{"-" * 8 if (item[1] or item[2]) is None else round((datetime.strptime(item[2], "%H:%M:%S") - datetime.strptime(item[1], "%H:%M:%S")).total_seconds() / 3600, 2)}')
+                to_print.append('-' * 8)
+            table.append(tuple(to_print))
+
+        print(tabulate(table, headers='firstrow', tablefmt='fancy_grid'))
         input('\n\n-- Wciśnij dowolny klawisz aby wrócić do menu --\n')
 
 
