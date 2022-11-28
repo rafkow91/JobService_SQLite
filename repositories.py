@@ -6,7 +6,7 @@ from config import DB_PATH
 
 class BaseRepository:
     def __init__(self) -> None:
-        print(DB_PATH)
+        
         self.connection = connect(DB_PATH)
         self.cursor = self.connection.cursor()
 
@@ -133,8 +133,14 @@ class WorktimeRepository(BaseRepository):
     def print_worktime(fetch: list):
         print('\n\nData\t\tWejście\t\tWyjście\t\tIlość przepracowanych godzin')
         for item in fetch:
-            print(
-                f'{item[0]}\t{item[1]}\t{"-" * 8 if item[2] is None else item[2]}\t{"-" * 8 if (item[1] or item[2]) is None else round((datetime.strptime(item[2], "%H:%M:%S") - datetime.strptime(item[1], "%H:%M:%S")).total_seconds() / 3600, 2)}')
+            item = list(item)
+            try:
+                item.append(round((datetime.strptime(item[2], "%H:%M:%S") - datetime.strptime(item[1], "%H:%M:%S")).total_seconds() / 3600, 2))
+            except TypeError:
+                item.append('-' * 8)
+            print(item)
+            # print(
+            #     f'{item[0]}\t{item[1]}\t{"-" * 8 if item[2] is None else item[2]}\t{"-" * 8 if (item[1] or item[2]) is None else round((datetime.strptime(item[2], "%H:%M:%S") - datetime.strptime(item[1], "%H:%M:%S")).total_seconds() / 3600, 2)}')
         input('\n\n-- Wciśnij dowolny klawisz aby wrócić do menu --\n')
 
 

@@ -50,8 +50,8 @@ class AddWorktime(AbstractView):
         worktime_time = None
 
         while True:
-            option = input('Chcesz dodać godziny z innej daty? [T/n] ').lower()
-            if option == 't' or option == '':
+            option = input('Chcesz dodać godziny z innej daty? [t/N] ').lower()
+            if option == 't':
                 while True:
                     try:
                         worktime_date = datetime.strptime(
@@ -61,7 +61,7 @@ class AddWorktime(AbstractView):
                         continue
                     break
                 break
-            elif option == 'n':
+            elif option == 'n'or option == '':
                 worktime_date = datetime.now().date()
                 break
             else:
@@ -69,7 +69,7 @@ class AddWorktime(AbstractView):
                 continue
 
         worktime_end_time = repository.get_end_time(worktime_date)
-        if worktime_end_time is None:
+        if worktime_end_time[0] is None:
             worktime_end_time = datetime.strptime('23:59:59', '%H:%M:%S').time()
         else:
             worktime_end_time = datetime.strptime(worktime_end_time[0], '%H:%M:%S').time()
@@ -104,8 +104,8 @@ class AddWorktime(AbstractView):
         worktime_time = None
 
         while True:
-            option = input('Chcesz dodać godziny z innej daty? ').lower()
-            if option == 't' or option == '':
+            option = input('Chcesz dodać godziny z innej daty? [t/N]').lower()
+            if option == 't':
                 while True:
                     try:
                         worktime_date = datetime.strptime(
@@ -115,7 +115,7 @@ class AddWorktime(AbstractView):
                         continue
                     break
                 break
-            elif option == 'n':
+            elif option == 'n' or option == '':
                 worktime_date = datetime.now().date()
                 break
             else:
@@ -123,7 +123,7 @@ class AddWorktime(AbstractView):
                 continue
 
         worktime_start_time = repository.get_start_time(worktime_date)
-        if worktime_start_time is None:
+        if worktime_start_time[0] is None:
             worktime_start_time = datetime.strptime('00:00:00', '%H:%M:%S').time()
         else:
             worktime_start_time = datetime.strptime(worktime_start_time[0], '%H:%M:%S').time()
