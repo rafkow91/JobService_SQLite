@@ -1,9 +1,11 @@
 from datetime import datetime
 from time import sleep
-from other_functions import clear_screen
 
+from tabulate import tabulate
+
+from other_functions import clear_screen
 from views.abstract_view import AbstractView
-from repositories import WorktimeRepository
+from repositories.worktimes import WorktimeRepository
 
 
 class AddWorktime(AbstractView):
@@ -196,7 +198,7 @@ class CheckWorktime(AbstractView):
         current_day = repository.get_workday(workday)
 
         try:
-            repository.print_worktime([current_day, ])
+            self.print_worktime([current_day, ])
         except TypeError:
             print('Dziś jeszcze nie wprowadzono godzin!')
             sleep(2)
@@ -213,7 +215,7 @@ class CheckWorktime(AbstractView):
 
         current_month = repository.get_month(workyear, workmonth)
 
-        repository.print_worktime(current_month)
+        self.print_worktime(current_month)
 
     def show_month(self):
         clear_screen()
@@ -245,4 +247,19 @@ class CheckWorktime(AbstractView):
                 continue
 
         month = repository.get_month(workyear, workmonth)
-        repository.print_worktime(month)
+        self.print_worktime(month)
+
+    @staticmethod
+    def print_worktime(fetch: list):
+        table = [('Data', 'Wejście', 'Wyjście', 'Ilość przepracowanych godzin')]
+        for item in fetch:
+            to_print = [i if i is not None else '-'*8 for i in item]
+            try:
+                to_print.append(round((datetime.strptime(
+                    item[2], "%H:%M:%S") - datetime.strptime(item[1], "%H:%M:%S")).total_seconds() / 3600, 2))
+            except TypeError:
+                to_print.append('-' * 8)
+            table.append(tuple(to_print))
+
+        print(tabulate(table, headers='firstrow', tablefmt='fancy_grid'))
+        input('\n\n-- Wciśnij dowolny klawisz aby wrócić do menu --\n')

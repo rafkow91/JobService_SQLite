@@ -2,8 +2,8 @@ from time import sleep
 from other_functions import clear_screen
 
 from views.abstract_view import AbstractView
-from views.manage_employees import AddEmployee, EditEmployee, ShowAllEmployees
-from views.worktime_managment import AddWorktime, CheckWorktime
+from views.employees import AddEmployee, EditEmployee, ShowAllEmployees
+from views.worktimes import AddWorktime, CheckWorktime
 
 
 class QuitProgram(AbstractView):

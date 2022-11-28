@@ -3,7 +3,7 @@ from time import sleep
 
 from other_functions import clear_screen, hash_password
 from views.abstract_view import AbstractView
-from repositories import LoginRepository
+from repositories.login import LoginRepository
 
 
 class LoginMenu(AbstractView):

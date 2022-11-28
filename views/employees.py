@@ -1,10 +1,11 @@
 from time import sleep
 
 from getpass import getpass
+from tabulate import tabulate
 
 from views.abstract_view import AbstractView
 from config import EMAIL_DOMAIN
-from repositories import TitleRepository, EmployeeRepository
+from repositories.employees import TitleRepository, EmployeeRepository
 from other_functions import clear_screen, hash_password
 
 
@@ -110,18 +111,44 @@ class AddEmployee(AbstractView):
         return title
 
 
-# TODO:
+# TODO: wydzielić tworzenie tabel do oddzielnej funkcji !!
 class EditEmployee(AbstractView):
     LABEL = 'Edycja konta pracownika'
+    repository = EmployeeRepository()
 
     def draw(self):
         self.draw_logo(EditEmployee.LABEL)
 
+    def get_choice(self):
+        clear_screen()
+        self.draw()
+        print('\t\tLista pracowników:')
+        table = [('Id', 'Imię', 'Nazwisko', 'Email', 'Stanowisko')]
+        table += self.repository.index()
+        
+        print(tabulate(table, headers='firstrow', tablefmt='fancy_grid')) 
+        while True:
+            choice = input('Którego pracownika chcesz edytować? (podaj id)')
+            break
+        return False
 
 
 # TODO:
 class ShowAllEmployees(AbstractView):
     LABEL = 'Wyświetlanie wszystkich pracowników'
+    repository = EmployeeRepository()
 
     def draw(self):
         self.draw_logo(ShowAllEmployees.LABEL)
+
+    def get_choice(self):
+        clear_screen()
+        self.draw()
+        table = [('Id', 'Imię', 'Nazwisko', 'Email', 'Stanowisko')]
+        table += self.repository.index()
+        
+        print(tabulate(table, headers='firstrow', tablefmt='fancy_grid')) 
+
+        input('\n\n-- Wciśnij dowolny klawisz aby wrócić do menu --\n')
+
+        return False
