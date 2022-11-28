@@ -1,11 +1,9 @@
 from datetime import datetime
 from time import sleep
 
-from tabulate import tabulate
-
-from other_functions import clear_screen
-from views.abstract_view import AbstractView
 from repositories.worktimes import WorktimeRepository
+from views.abstract_view import AbstractView
+from other_functions import clear_screen, print_table
 
 
 class AddWorktime(AbstractView):
@@ -252,14 +250,18 @@ class CheckWorktime(AbstractView):
     @staticmethod
     def print_worktime(fetch: list):
         table = [('Data', 'Wejście', 'Wyjście', 'Ilość przepracowanych godzin')]
+        sum_hours = 0
         for item in fetch:
             to_print = [i if i is not None else '-'*8 for i in item]
             try:
-                to_print.append(round((datetime.strptime(
-                    item[2], "%H:%M:%S") - datetime.strptime(item[1], "%H:%M:%S")).total_seconds() / 3600, 2))
+                work_hours = round((datetime.strptime(
+                    item[2], "%H:%M:%S") - datetime.strptime(item[1], "%H:%M:%S")).total_seconds() / 3600, 2)
+                to_print.append(work_hours)
+                sum_hours += work_hours
             except TypeError:
                 to_print.append('-' * 8)
             table.append(tuple(to_print))
 
-        print(tabulate(table, headers='firstrow', tablefmt='fancy_grid'))
+        print_table(table)
+        print(f'\tRazem {round(sum_hours, 2)} h')
         input('\n\n-- Wciśnij dowolny klawisz aby wrócić do menu --\n')

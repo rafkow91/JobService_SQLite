@@ -1,12 +1,11 @@
 from time import sleep
 
 from getpass import getpass
-from tabulate import tabulate
 
+from repositories.employees import TitleRepository, EmployeeRepository
 from views.abstract_view import AbstractView
 from config import EMAIL_DOMAIN
-from repositories.employees import TitleRepository, EmployeeRepository
-from other_functions import clear_screen, hash_password
+from other_functions import clear_screen, hash_password, print_table
 
 
 class AddEmployee(AbstractView):
@@ -15,7 +14,6 @@ class AddEmployee(AbstractView):
     def draw(self):
         clear_screen()
         self.draw_logo(self.LABEL)
-
 
     def get_choice(self, option: int = None):
         while True:
@@ -31,7 +29,7 @@ class AddEmployee(AbstractView):
             print(f'Poprawnie dodano nowego pracownika ({person["login"]})')
             sleep(1)
             self.draw()
-        
+
         return False
 
     def create(self, EMAIL_DOMAIN):
@@ -111,7 +109,6 @@ class AddEmployee(AbstractView):
         return title
 
 
-# TODO: wydzielić tworzenie tabel do oddzielnej funkcji !!
 class EditEmployee(AbstractView):
     LABEL = 'Edycja konta pracownika'
     repository = EmployeeRepository()
@@ -124,13 +121,32 @@ class EditEmployee(AbstractView):
         self.draw()
         print('\t\tLista pracowników:')
         table = [('Id', 'Imię', 'Nazwisko', 'Email', 'Stanowisko')]
-        table += self.repository.index()
+        index = self.repository.index()
+        table += index
+
+        print_table(table)
         
-        print(tabulate(table, headers='firstrow', tablefmt='fancy_grid')) 
+        employee_ids = [item[0] for item in index]
+
+
         while True:
-            choice = input('Którego pracownika chcesz edytować? (podaj id)')
+            try:
+                choice = input('Którego pracownika chcesz edytować? (podaj id) // aby anulować wciśnij "enter" //  ')
+                if choice == '':
+                    return False
+                if int(choice) not in employee_ids:
+                    raise ValueError
+            except ValueError:
+                print('Id musi być liczbą z piewszej kolumny!!')
+                continue
+            self.edit(int(choice))
             break
         return False
+
+    def edit(self, employee_id: int):
+        clear_screen()
+        self.draw()
+        input('...')
 
 
 # TODO:
@@ -146,8 +162,8 @@ class ShowAllEmployees(AbstractView):
         self.draw()
         table = [('Id', 'Imię', 'Nazwisko', 'Email', 'Stanowisko')]
         table += self.repository.index()
-        
-        print(tabulate(table, headers='firstrow', tablefmt='fancy_grid')) 
+
+        print_table(table)
 
         input('\n\n-- Wciśnij dowolny klawisz aby wrócić do menu --\n')
 
