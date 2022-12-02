@@ -148,13 +148,17 @@ class EditEmployee(AbstractView):
         clear_screen()
         self.draw()
         print('// aby nie zmieniać danego pola wciśnij "enter"//\n\n')
+        fields_names = ['Imię', 'Nazwisko', 'Stanowisko', 'Telefon', 'E-mail', 'Login']
         existed_employee = self.repository.get_employee_by_id(employee_id)
         print(existed_employee)
         change_employee = []
 
-        # TODO: Tu skończyłem pracować (2022-11-28 21:05)
-        for field in existed_employee:
-            to_append = input('...')
+        for name, field in zip(fields_names, existed_employee):
+            to_append = input(f'{name}: [{field}] ')
+            change_employee.append(to_append if to_append != '' else field)
+
+        print(existed_employee)
+        print(change_employee)
 
 
 class ShowAllEmployees(AbstractView):
