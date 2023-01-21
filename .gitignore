@@ -4,6 +4,8 @@
 /.idea
 */__pycache__
 /pycharm_venv/
+.vscode/
+database/
 
 #files
 *.db
