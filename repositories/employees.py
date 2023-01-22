@@ -49,6 +49,8 @@ class EmployeeRepository(BaseRepository):
 
         return self.cursor.fetchone()
 
+    def replace_employee(self, employee: dict):
+        pass
 
 
 class TitleRepository(BaseRepository):
